@@ -3,7 +3,7 @@ from random import randint
 lista_npcs = []
 
 player = {
-    "nome": "Santos_Btw",
+    "nome": "Santos",
     "level": 1,
     "exp": 0,
     "exp_max": 50,
@@ -31,15 +31,66 @@ def gerar_npcs(n_npcs):
 
 def exibir_npcs():
     for npc in lista_npcs:
-        print(
-            f"Nome: {npc['nome']} // Level: {npc['level']} // Dano: {npc['dano']} // HP: {npc['hp']} // EXP: {npc['exp']}"
+        exibir_npc(npc)
+
+def exibir_npc(npc):
+    print(
+            f"Nome: {npc['nome']} // "
+            f"Level: {npc['level']} // "
+            f"Dano: {npc['dano']} // "
+            f"HP: {npc['hp']} // "
+            f"EXP: {npc['exp']}"
         )
+    
+def exibir_player():
+    print(
+            f"Nome: {player['nome']} // "
+            f"Level: {player['level']} // "
+            f"Dano: {player['dano']} // "
+            f"HP: {player['hp']}/{player['hp_max']} // " 
+            f"EXP: {player['exp']}/{player['exp_max']}"
+        )
+    
+def reset_player():
+    player['hp'] = player['hp_max']
+
+def reset_npc(npc):
+    npc['hp'] = npc['hp_max']
+
+def level_up():
+    if player['exp'] >= player['exp_max']: 
+        player['exp'] -= player['exp_max']        
+        aplicar_level_up()
+
+def aplicar_level_up():
+    player['level'] += 1
+    player['hp_max'] = int(round(player['hp_max'] * 1.20))
+    player['dano'] = int(round(player['dano'] * 1.20))
+    player['exp_max'] = int(round(player['exp_max'] * 1.20))
 
 
 def iniciar_batalha (npc):
-    atacar_npc(npc)
-    atacar_player(npc)
-    exibir_info_batalha(npc)
+    while player['hp'] > 0 and npc['hp'] > 0:
+        atacar_npc(npc)
+        if npc['hp'] <= 0:
+            break
+        atacar_player(npc)
+        if player['hp'] <= 0:
+            break
+
+        exibir_info_batalha(npc)
+    
+    if player ['hp'] > 0: 
+        print (f"{player['nome']} venceu e ganhou {npc['exp']} de EXP!")
+        player['exp'] += npc['exp']
+        exibir_player()
+    else: 
+        print (f"O {npc['nome']} venceu!")
+        exibir_npc(npc)
+
+    level_up()
+    reset_player()
+    reset_npc(npc)
 
 # atacar_npc(npc) // npc: hp - player:dano
 def atacar_npc (npc):
@@ -50,11 +101,11 @@ def atacar_player (npc):
     player['hp'] -= npc['dano']
 
 def exibir_info_batalha(npc):
-    print(f"Player: {player['hp']} / {player['hp_max']}")
-    print(f"NPC: {npc['nome']}: {player['hp']} / {player['hp_max']}")
+    print(f"{player['nome']}: {player['hp']} / {player['hp_max']}")
+    print(f"NPC: {npc['nome']}: {npc['hp']} / {npc['hp_max']}")
+    print('------------------------------------------\n')
 
 gerar_npcs(5)
-# exibir_npcs()
 
 npc_selecionado = lista_npcs[0]
 iniciar_batalha(npc_selecionado)
